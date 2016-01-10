@@ -138,7 +138,7 @@ $app->get('/active', function() use ($app){
 			  }
 		   }
 		 $maxCount=max($hourCount);
-		 echo $maxCount;
+		 //echo $maxCount;
 		 for($k=0;$k<24;$k++){
 			if($hourCount[$k]==$maxCount)
 				$response["$k"] = $maxCount;
