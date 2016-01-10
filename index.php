@@ -36,7 +36,7 @@ $app->get('/active', function() use ($app){
 	
 	//build signature
 	$oauth_hash = '';
-	$oauth_hash .= 'count=20&';
+	$oauth_hash .= 'count=200&';
 	$oauth_hash .= 'oauth_consumer_key=DwqmZvelWwN6DERiteqUuFbip&';
 	$oauth_hash .= 'oauth_nonce=' . time() . '&';
 	$oauth_hash .= 'oauth_signature_method=HMAC-SHA1&';
@@ -61,7 +61,7 @@ $app->get('/active', function() use ($app){
 	
 	//build cUrl header
 	$oauth_header = '';
-	$oauth_header .= 'count="20", ';
+	$oauth_header .= 'count="200", ';
 	$oauth_header .= 'oauth_consumer_key="DwqmZvelWwN6DERiteqUuFbip", ';
 	$oauth_header .= 'oauth_nonce="' . time() . '", ';
 	$oauth_header .= 'oauth_signature="' . $signature . '", ';
@@ -76,7 +76,7 @@ $app->get('/active', function() use ($app){
 	$curl_request = curl_init();
 	curl_setopt($curl_request, CURLOPT_HTTPHEADER, $curl_header);
 	curl_setopt($curl_request, CURLOPT_HEADER, false);
-	curl_setopt($curl_request, CURLOPT_URL, 'https://api.twitter.com/1.1/statuses/user_timeline.json?count=20&screen_name=' .$screen_name . "");
+	curl_setopt($curl_request, CURLOPT_URL, 'https://api.twitter.com/1.1/statuses/user_timeline.json?count=200&screen_name=' .$screen_name . "");
 	curl_setopt($curl_request, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($curl_request, CURLOPT_SSL_VERIFYPEER, false);
 	$json = curl_exec($curl_request);
