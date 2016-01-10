@@ -23,7 +23,7 @@ $app->get('/active', function() use ($app){
 	
 	//get the request
 	$req = $app->request();
-	$screen_name = $req->get('tweet_id');
+	$screen_name = $req->get('twitter_id');
 	$time_span=strtolower($req->get('time_span'));
 	
 	//$name_start = strrpos($srch, 'id=') + 1; // +1 so we don't include the space in our result
@@ -84,7 +84,7 @@ $app->get('/active', function() use ($app){
 
 	$data = json_decode($json);
 	$size_data=count($data);
-	echo $size_data;
+	//echo $size_data;
 	$response = [];
 	//parse the data to get active hour
 	
@@ -113,17 +113,39 @@ $app->get('/active', function() use ($app){
 					$daycount[5]++;
 				else if($tweetArray["$i"]=="Sat")
 					$daycount[6]++;
-		
 		  }
 		  $maxCount=max($daycount);
 		  //echo $maxCount;
-		  for($i=0;$i<7;$i++){
-			  if($daycount[$i]==$maxCount)
-				  $response["$i"] = $maxCount;
-		  }
-			  
-		
+		   for($i=0;$i<7;$i++){
+			   if($daycount[$i]==$maxCount)
+				   $response["$i"] = $maxCount;
+		   }	
 	 }
+	 else if($time_span == "hour"){
+		 $tweetArray=[];
+		 $maxCount=0;
+		 $hourCount=array_fill(0,24,null);
+		 for($i=0;$i<$size_data;$i++){
+			  $temp= $data[$i]->created_at;
+			  $temp = substr($temp,10,10);
+			  $tweetArray["$i"]=intval(substr($temp,0,3));
+			  //echo $tweetArray[$i]." ,";
+			  //assigning frequency of tweets per hour
+			  for($j=0;$j<24;$j++){
+				  if($tweetArray["$i"]==$j){
+					  $hourCount[$j]++;
+				  }
+			  }
+		   }
+		 $maxCount=max($hourCount);
+		 echo $maxCount;
+		 for($k=0;$k<24;$k++){
+			if($hourCount[$k]==$maxCount)
+				$response["$k"] = $maxCount;
+		 }
+		 
+		 
+	  }
 	
 	//$response["answer"]= $data;
 	//echo $data;
