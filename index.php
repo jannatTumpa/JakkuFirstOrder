@@ -19,17 +19,19 @@ function echoRespnse($status_code, $response) {
 }
 
 
-$app->get('/twitter', function() use ($app){
+$app->get('/active', function() use ($app){
 	
 	//get the request
 	$req = $app->request();
-	$screen_name = $req->get('screenName');
+	$screen_name = $req->get('tweet_id');
+	$time_span=strtolower($req->get('time_span'));
+	
 	//$name_start = strrpos($srch, 'id=') + 1; // +1 so we don't include the space in our result
 	//$name_end = strrpos($srch, ' ')+1;
 	//$name_width= name_end-name_start;
 	//echo $name_width;
 	//$cityname = substr($question, $last_word_start);
-	echo $screen_name;
+	//echo $screen_name;
 	
 	
 	//build signature
@@ -81,10 +83,51 @@ $app->get('/twitter', function() use ($app){
 	curl_close($curl_request); 
 
 	$data = json_decode($json);
+	$size_data=count($data);
+	echo $size_data;
 	$response = [];
-	$response["answer"]= $data;
+	//parse the data to get active hour
+	
+	 if($time_span == "day"){
+		 $tweetArray=[];
+		 $maxCount=0;
+		 $daycount=array(0,0,0,0,0,0,0);
+		 //$tweetArray=$data[0]->created_at;
+		// echo $tweetArray;
+		
+		 for($i=0;$i<$size_data;$i++){
+			  $temp= $data[$i]->created_at;
+			  $tweetArray["$i"]=substr($temp,0,3);
+				//echo $tweetArray[$i];
+				if($tweetArray["$i"]=="Sun")
+					$daycount[0]++;
+				else if($tweetArray["$i"]=="Mon")
+					$daycount[1]++;
+				else if($tweetArray["$i"]=="Tue")
+					$daycount[2]++;
+				else if($tweetArray["$i"]=="Wed")
+					$daycount[3]++;
+				else if($tweetArray["$i"]=="Thu")
+					$daycount[4]++;
+				else if($tweetArray["$i"]=="Fri")
+					$daycount[5]++;
+				else if($tweetArray["$i"]=="Sat")
+					$daycount[6]++;
+		
+		  }
+		  $maxCount=max($daycount);
+		  //echo $maxCount;
+		  for($i=0;$i<7;$i++){
+			  if($daycount[$i]==$maxCount)
+				  $response["$i"] = $maxCount;
+		  }
+			  
+		
+	 }
+	
+	//$response["answer"]= $data;
 	//echo $data;
-	echo "I am here";
+	//echo "I am here";
 	echoRespnse(200, $response);
 
 });
