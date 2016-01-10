@@ -240,11 +240,11 @@ $app->get('/hashtag', function() use ($app){
 		$response["$temp[$i]"]=$count;
 			
 	}
-	// usort($response,function($a,$b){
-		// if($a<$b){
-			// $temp1=$response[$""]
-		// }
-	//});
+	asort($response);
+	$arrayResult=array_reverse($response);
+	$arrayResult= array_slice($arrayResult, 0, $n); 
+	//for($i=count($response);$i>count($response)-$n;$i--)
+	
 	// $resultArray = $resultArray.sort(function (a, b) {
     // return a.val.localeCompare( b.val );
 	// });
@@ -252,9 +252,10 @@ $app->get('/hashtag', function() use ($app){
 
 
 	//$resultArray = array_slice($response, 0, $n); 
-	// foreach ($response as $key => $value) {
-    // echo "$key: $value\n";
-	echoRespnse(200, $response);
+	 // foreach ($response as $key => $value) {
+     // echo "$key: $value\n";
+	 
+	echoRespnse(200, $arrayResult);
 });
 
 $app->run();
