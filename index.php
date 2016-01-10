@@ -26,14 +26,6 @@ $app->get('/active', function() use ($app){
 	$screen_name = $req->get('twitter_id');
 	$time_span=strtolower($req->get('time_span'));
 	
-	//$name_start = strrpos($srch, 'id=') + 1; // +1 so we don't include the space in our result
-	//$name_end = strrpos($srch, ' ')+1;
-	//$name_width= name_end-name_start;
-	//echo $name_width;
-	//$cityname = substr($question, $last_word_start);
-	//echo $screen_name;
-	
-	
 	//build signature
 	$oauth_hash = '';
 	$oauth_hash .= 'count=200&';
@@ -159,14 +151,6 @@ $app->get('/hashtag', function() use ($app){
 	$screen_name = $req->get('twitter_id');
 	$n=$req->get('n');
 	
-	//$name_start = strrpos($srch, 'id=') + 1; // +1 so we don't include the space in our result
-	//$name_end = strrpos($srch, ' ')+1;
-	//$name_width= name_end-name_start;
-	//echo $name_width;
-	//$cityname = substr($question, $last_word_start);
-	//echo $screen_name;
-	
-	
 	//build signature
 	$oauth_hash = '';
 	$oauth_hash .= 'count=200&';
@@ -257,5 +241,77 @@ $app->get('/hashtag', function() use ($app){
 	 
 	echoRespnse(200, $arrayResult);
 });
+$app->get('/authority', function() use ($app){
+	
+	//get the request
+	$req = $app->request();
+	$screen_name = $req->get('twitter_id');
+	$tweet=strtolower($req->get('tweet'));
+	
+	//build signature
+	$oauth_hash = '';
+	$oauth_hash .= 'count=200&';
+	$oauth_hash .= 'oauth_consumer_key=DwqmZvelWwN6DERiteqUuFbip&';
+	$oauth_hash .= 'oauth_nonce=' . time() . '&';
+	$oauth_hash .= 'oauth_signature_method=HMAC-SHA1&';
+	$oauth_hash .= 'oauth_timestamp=' . time() . '&';
+	$oauth_hash .= 'oauth_token=2860541348-EH8MJm85ffjfEtRpltqHnkNudlmmD2UMS32zP2U&';
+	$oauth_hash .= 'oauth_version=1.0&';
+	$oauth_hash .= 'screen_name='. $screen_name ;
 
+	$base = '';
+	$base .= 'GET';
+	$base .= '&';
+	$base .= rawurlencode('https://api.twitter.com/1.1/statuses/user_timeline.json');
+	$base .= '&';
+	$base .= rawurlencode($oauth_hash);
+	$key = '';
+	$key .= rawurlencode('g5YF0YUHjELSKAwoaCYTroBMVCwzdbTyQhGTQdvnB4sIVvhBhq');
+	$key .= '&';
+	$key .= rawurlencode('8pzJoo9ZaJVGU6ZFCnxJR43WSK55A1Grzg655FpGffm7R');
+	$signature = base64_encode(hash_hmac('sha1', $base, $key, true));
+	$signature = rawurlencode($signature);
+	
+	
+	//build cUrl header
+	$oauth_header = '';
+	$oauth_header .= 'count="200", ';
+	$oauth_header .= 'oauth_consumer_key="DwqmZvelWwN6DERiteqUuFbip", ';
+	$oauth_header .= 'oauth_nonce="' . time() . '", ';
+	$oauth_header .= 'oauth_signature="' . $signature . '", ';
+	$oauth_header .= 'oauth_signature_method="HMAC-SHA1", ';
+	$oauth_header .= 'oauth_timestamp="' . time() . '", ';
+	$oauth_header .= 'oauth_token="2860541348-EH8MJm85ffjfEtRpltqHnkNudlmmD2UMS32zP2U", ';
+	$oauth_header .= 'oauth_version="1.0", ';
+	$oauth_header .= 'screen_name="' . $screen_name . '"';
+	$curl_header = array("Authorization: Oauth {$oauth_header}", 'Expect:');
+
+	// hitting URL
+	$curl_request = curl_init();
+	curl_setopt($curl_request, CURLOPT_HTTPHEADER, $curl_header);
+	curl_setopt($curl_request, CURLOPT_HEADER, false);
+	curl_setopt($curl_request, CURLOPT_URL, 'https://api.twitter.com/1.1/statuses/user_timeline.json?count=200&screen_name=' .$screen_name . "");
+	curl_setopt($curl_request, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($curl_request, CURLOPT_SSL_VERIFYPEER, false);
+	$json = curl_exec($curl_request);
+	curl_close($curl_request); 
+	
+	$data = json_decode($json);
+	$size_data=count($data);
+	$temp="";
+	//fetching text from timeline
+	 for($i=0;$i<$size_data;$i++){
+			  $temp= $temp . $data[$i]->text;
+			  //$temp = preg_replace('/[^A-Za-z0-9\-]/', '', $temp); // Removes special chars.
+			  //echo $temp;
+	 }
+	 //counting frequency of words in timeline
+	 $wordsInTimeline = str_word_count($temp, 1);
+	 $frequencyInText = array_count_values($wordsInTimeline);
+	 //counting frequency of words in tweet
+	 $wordsInTweet= str_word_count($tweet,1);
+	 $frequencyInTweet= array_count_values($wordsInTweet);
+	 
+	 echoRespnse(200, $frequencyInTweet);
+});
 $app->run();
