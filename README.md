@@ -10,9 +10,10 @@ The approach I followed here is naive one. There are many other methods to solve
  most probable times of posting by the user. 
  The steps I followed here are:
 	1. Fetched all texts from timeline of a user and counted frequency of each words.
-	2. Now, given a tweet, first i counted probability of each word in that tweet and probability of 
+	2. Now, given a tweet, first I counted probability of each word in that tweet and probability of 
 		that word in whole timeline and multiplied this probabilities 
 		and summed that for all words in the tweet. 
+N.B: The task-3 is case-sensitive. In case, u get probability 0, please check the cases of the words.
 		
 Reference:
 http://arxiv.org/ftp/arxiv/papers/1401/1401.6118.pdf
