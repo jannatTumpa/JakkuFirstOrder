@@ -109,8 +109,11 @@ $app->get('/active', function() use ($app){
 		  $maxCount=max($daycount);
 		  //echo $maxCount;
 		   for($i=0;$i<7;$i++){
-			   if($daycount[$i]==$maxCount)
+			   if($daycount[$i]==$maxCount){
 				   $response["$i"] = $maxCount;
+				   break;
+			   }
+				
 		   }	
 	 }
 	 else if($time_span == "hour"){
@@ -133,8 +136,10 @@ $app->get('/active', function() use ($app){
 		 //echo $maxCount;
 		 //finding maximum frequency
 		 for($k=0;$k<24;$k++){
-			if($hourCount[$k]==$maxCount)
+			if($hourCount[$k]==$maxCount){
 				$response["$k"] = $maxCount;
+				break;
+			}
 		 }  
 	  }
 	
@@ -334,7 +339,7 @@ $app->get('/authority', function() use ($app){
 	 //form the response
 	 $response["twitter_id"]= $screen_name;
 	 $response["tweet"]=$tweet;
-	 $response["probability"]=$probability;
+	 $response["probability"]=round($probability;
 	 
 	 echoRespnse(200, $response);
 	
