@@ -339,7 +339,7 @@ $app->get('/authority', function() use ($app){
 	 //form the response
 	 $response["twitter_id"]= $screen_name;
 	 $response["tweet"]=$tweet;
-	 $response["probability"]=round($probability;
+	 $response["probability"]=$probability;
 	 
 	 echoRespnse(200, $response);
 	
