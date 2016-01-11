@@ -299,6 +299,10 @@ $app->get('/authority', function() use ($app){
 	$data = json_decode($json);
 	$size_data=count($data);
 	$temp="";
+	$proOfWordsInTweet=[];
+	$proOfWordsInTimeline = [];
+	$probabilitySum=0;
+	$probability=0;
 	//fetching text from timeline
 	 for($i=0;$i<$size_data;$i++){
 			  $temp= $temp . $data[$i]->text;
@@ -312,6 +316,31 @@ $app->get('/authority', function() use ($app){
 	 $wordsInTweet= str_word_count($tweet,1);
 	 $frequencyInTweet= array_count_values($wordsInTweet);
 	 
-	 echoRespnse(200, $frequencyInTweet);
+	 foreach($frequencyInTweet as $key =>$value){
+		 $proOfWordsInTweet[$key] = $value/count($frequencyInTweet);
+	 }
+	 foreach($frequencyInText as $key =>$value){
+		 $proOfWordsInText[$key] = $value/count($frequencyInText);
+	 }
+	 foreach($frequencyInTweet as $key =>$value){
+		 
+		$proOfWordsInTweet[$key] = $value/count($frequencyInTweet);
+		//echo $proOfWordsInTweet[$key];
+		$tmp=$key;
+		 foreach($frequencyInText as $key => $value){
+			 if($key == $tmp){
+				 $proOfWordsInText[$key] = $frequencyInText[$key]/count($frequencyInText);
+				 $probability = $probability+($proOfWordsInTweet[$tmp]*$proOfWordsInText[$key]);	 
+			 }
+			   //$probabilitySum = $probabilitySum+$probability;
+		}	
+	 }
+	 $response["twitter_id"]= $screen_name;
+	 $response["tweet"]=$tweet;
+	 $response["probability"]=$probability;
+	 
+	 echoRespnse(200, $response);
+	 //echoRespnse(200,$proOfWordsInText);
+	
 });
 $app->run();
