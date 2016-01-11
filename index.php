@@ -246,7 +246,7 @@ $app->get('/authority', function() use ($app){
 	//get the request
 	$req = $app->request();
 	$screen_name = $req->get('twitter_id');
-	$tweet=strtolower($req->get('tweet'));
+	$tweet=$req->get('tweet');
 	
 	//build signature
 	$oauth_hash = '';
@@ -300,8 +300,7 @@ $app->get('/authority', function() use ($app){
 	$size_data=count($data);
 	$temp="";
 	$proOfWordsInTweet=[];
-	$proOfWordsInTimeline = [];
-	$probabilitySum=0;
+	$proOfWordsInText=[];
 	$probability=0;
 	//fetching text from timeline
 	 for($i=0;$i<$size_data;$i++){
@@ -316,31 +315,28 @@ $app->get('/authority', function() use ($app){
 	 $wordsInTweet= str_word_count($tweet,1);
 	 $frequencyInTweet= array_count_values($wordsInTweet);
 	 
+	 //counting probability of each words in given tweet, works
 	 foreach($frequencyInTweet as $key =>$value){
 		 $proOfWordsInTweet[$key] = $value/count($frequencyInTweet);
 	 }
-	 foreach($frequencyInText as $key =>$value){
-		 $proOfWordsInText[$key] = $value/count($frequencyInText);
-	 }
+	
 	 foreach($frequencyInTweet as $key =>$value){
-		 
-		$proOfWordsInTweet[$key] = $value/count($frequencyInTweet);
-		//echo $proOfWordsInTweet[$key];
 		$tmp=$key;
 		 foreach($frequencyInText as $key => $value){
 			 if($key == $tmp){
+				 //if the word is in history, then calculate probability of that word in timeline history
 				 $proOfWordsInText[$key] = $frequencyInText[$key]/count($frequencyInText);
+				 //sum up that probability
 				 $probability = $probability+($proOfWordsInTweet[$tmp]*$proOfWordsInText[$key]);	 
 			 }
-			   //$probabilitySum = $probabilitySum+$probability;
 		}	
 	 }
+	 //form the response
 	 $response["twitter_id"]= $screen_name;
 	 $response["tweet"]=$tweet;
 	 $response["probability"]=$probability;
 	 
 	 echoRespnse(200, $response);
-	 //echoRespnse(200,$proOfWordsInText);
 	
 });
 $app->run();
